@@ -5,7 +5,6 @@ import { useI18n } from 'vue-i18n'
 import CommonPage from '@/components/page/CommonPage.vue'
 import { useUserStore } from '@/store'
 import api from '@/api'
-import { is } from '~/src/utils'
 
 const { t } = useI18n()
 const userStore = useUserStore()
@@ -16,7 +15,6 @@ const infoFormRef = ref(null)
 const infoForm = ref({
   avatar: userStore.avatar,
   username: userStore.name,
-  email: userStore.email,
 })
 async function updateProfile() {
   isLoading.value = true
@@ -141,13 +139,6 @@ function validatePasswordSame(rule, value) {
                 v-model:value="infoForm.username"
                 type="text"
                 :placeholder="$t('views.profile.placeholder_username')"
-              />
-            </NFormItem>
-            <NFormItem :label="$t('views.profile.label_email')" path="email">
-              <NInput
-                v-model:value="infoForm.email"
-                type="text"
-                :placeholder="$t('views.profile.placeholder_email')"
               />
             </NFormItem>
             <NButton type="primary" :loading="isLoading" @click="updateProfile">

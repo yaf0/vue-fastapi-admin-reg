@@ -6,8 +6,7 @@ import {
   NCheckboxGroup,
   NForm,
   NFormItem,
-  NImage,
-  NInput,
+    NInput,
   NSpace,
   NSwitch,
   NTag,
@@ -74,13 +73,6 @@ const columns = [
     ellipsis: { tooltip: true },
   },
   {
-    title: '邮箱',
-    key: 'email',
-    width: 60,
-    align: 'center',
-    ellipsis: { tooltip: true },
-  },
-  {
     title: '用户角色',
     key: 'role',
     width: 60,
@@ -88,9 +80,9 @@ const columns = [
     render(row) {
       const roles = row.roles ?? []
       const group = []
-      for (let i = 0; i < roles.length; i++)
+      for (const role of roles)
         group.push(
-          h(NTag, { type: 'info', style: { margin: '2px 3px' } }, { default: () => roles[i].name })
+          h(NTag, { type: 'info', style: { margin: '2px 3px' } }, { default: () => role.name })
         )
       return h('span', group)
     },
@@ -167,7 +159,7 @@ const columns = [
               onClick: () => {
                 handleEdit(row)
                 modalForm.value.dept_id = row.dept?.id
-                modalForm.value.role_ids = row.roles.map((e) => (e = e.id))
+                modalForm.value.role_ids = row.roles.map(e => e.id)
                 delete modalForm.value.dept
               },
             },
@@ -252,7 +244,7 @@ async function handleUpdateDisable(row) {
     return
   }
   row.publishing = true
-  row.is_active = row.is_active === false ? true : false
+  row.is_active = !row.is_active
   row.publishing = false
   const role_ids = []
   row.roles.forEach((e) => {
@@ -266,7 +258,7 @@ async function handleUpdateDisable(row) {
     $table.value?.handleSearch()
   } catch (err) {
     // 有异常恢复原来的状态
-    row.is_active = row.is_active === false ? true : false
+    row.is_active = !row.is_active
   } finally {
     row.publishing = false
   }
@@ -296,24 +288,6 @@ const validateAddUser = {
       required: true,
       message: '请输入名称',
       trigger: ['input', 'blur'],
-    },
-  ],
-  email: [
-    {
-      required: true,
-      message: '请输入邮箱地址',
-      trigger: ['input', 'change'],
-    },
-    {
-      trigger: ['blur'],
-      validator: (rule, value, callback) => {
-        const re = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/
-        if (!re.test(modalForm.value.email)) {
-          callback('邮箱格式错误')
-          return
-        }
-        callback()
-      },
     },
   ],
   password: [
@@ -396,15 +370,6 @@ const validateAddUser = {
                 @keypress.enter="$table?.handleSearch()"
               />
             </QueryBarItem>
-            <QueryBarItem label="邮箱" :label-width="40">
-              <NInput
-                v-model:value="queryItems.email"
-                clearable
-                type="text"
-                placeholder="请输入邮箱"
-                @keypress.enter="$table?.handleSearch()"
-              />
-            </QueryBarItem>
           </template>
         </CrudTable>
 
@@ -425,9 +390,6 @@ const validateAddUser = {
           >
             <NFormItem label="用户名称" path="username">
               <NInput v-model:value="modalForm.username" clearable placeholder="请输入用户名称" />
-            </NFormItem>
-            <NFormItem label="邮箱" path="email">
-              <NInput v-model:value="modalForm.email" clearable placeholder="请输入邮箱" />
             </NFormItem>
             <NFormItem v-if="modalAction === 'add'" label="密码" path="password">
               <NInput

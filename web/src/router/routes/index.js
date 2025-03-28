@@ -116,6 +116,15 @@ export const basicRoutes = [
       title: '登录页',
     },
   },
+  {
+    name: 'Register',
+    path: '/register',
+    component: () => import('@/views/register/index.vue'),
+    isHidden: true,
+    meta: {
+      title: '注册页',
+    },
+  },
 ]
 
 export const NOT_FOUND_ROUTE = {

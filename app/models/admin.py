@@ -9,7 +9,6 @@ from .enums import MethodType
 class User(BaseModel, TimestampMixin):
     username = fields.CharField(max_length=20, unique=True, description="用户名称", index=True)
     alias = fields.CharField(max_length=30, null=True, description="姓名", index=True)
-    email = fields.CharField(max_length=255, unique=True, description="邮箱", index=True)
     phone = fields.CharField(max_length=20, null=True, description="电话", index=True)
     password = fields.CharField(max_length=128, null=True, description="密码")
     is_active = fields.BooleanField(default=True, description="是否激活", index=True)
@@ -87,3 +86,16 @@ class AuditLog(BaseModel, TimestampMixin):
     response_time = fields.IntField(default=0, description="响应时间(单位ms)", index=True)
     request_args = fields.JSONField(null=True, description="请求参数")
     response_body = fields.JSONField(null=True, description="返回数据")
+
+
+class Lead(BaseModel, TimestampMixin):
+    time = fields.DatetimeField(description="时间", index=True)
+    phone = fields.CharField(max_length=20, description="号码", index=True)
+    wechat = fields.CharField(max_length=50, description="微信", index=True)
+    remark = fields.TextField(null=True, description="备注")
+    intention_level = fields.IntField(description="意向等级", index=True)  # 1-5级
+    is_read = fields.BooleanField(default=False, description="是否已读", index=True)
+    assigned_user = fields.ForeignKeyField("models.User", related_name="leads", description="分配用户", index=True)
+
+    class Meta:
+        table = "lead"

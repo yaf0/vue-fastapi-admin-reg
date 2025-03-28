@@ -6,7 +6,6 @@ from pydantic import BaseModel, EmailStr, Field
 
 class BaseUser(BaseModel):
     id: int
-    email: Optional[EmailStr] = None
     username: Optional[str] = None
     is_active: Optional[bool] = True
     is_superuser: Optional[bool] = False
@@ -17,7 +16,6 @@ class BaseUser(BaseModel):
 
 
 class UserCreate(BaseModel):
-    email: EmailStr = Field(example="admin@qq.com")
     username: str = Field(example="admin")
     password: str = Field(example="123456")
     is_active: Optional[bool] = True
@@ -31,7 +29,6 @@ class UserCreate(BaseModel):
 
 class UserUpdate(BaseModel):
     id: int
-    email: EmailStr
     username: str
     is_active: Optional[bool] = True
     is_superuser: Optional[bool] = False

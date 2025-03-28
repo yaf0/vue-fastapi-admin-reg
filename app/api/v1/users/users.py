@@ -18,14 +18,11 @@ async def list_user(
     page: int = Query(1, description="页码"),
     page_size: int = Query(10, description="每页数量"),
     username: str = Query("", description="用户名称，用于搜索"),
-    email: str = Query("", description="邮箱地址"),
     dept_id: int = Query(None, description="部门ID"),
 ):
     q = Q()
     if username:
         q &= Q(username__contains=username)
-    if email:
-        q &= Q(email__contains=email)
     if dept_id is not None:
         q &= Q(dept_id=dept_id)
     total, user_objs = await user_controller.list(page=page, page_size=page_size, search=q)
@@ -50,9 +47,9 @@ async def get_user(
 async def create_user(
     user_in: UserCreate,
 ):
-    user = await user_controller.get_by_email(user_in.email)
+    user = await user_controller.get_by_username(user_in.username)
     if user:
-        return Fail(code=400, msg="The user with this email already exists in the system.")
+        return Fail(code=400, msg="用户名已存在")
     new_user = await user_controller.create_user(obj_in=user_in)
     await user_controller.update_roles(new_user, user_in.role_ids)
     return Success(msg="Created Successfully")
