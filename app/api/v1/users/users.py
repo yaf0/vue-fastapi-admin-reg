@@ -1,10 +1,11 @@
 import logging
 
-from fastapi import APIRouter, Body, Query
+from fastapi import APIRouter, Body, Query, Depends
 from tortoise.expressions import Q
 
 from app.controllers.dept import dept_controller
 from app.controllers.user import user_controller
+from app.core.dependency import DependPermisson
 from app.schemas.base import Fail, Success, SuccessExtra
 from app.schemas.users import *
 
@@ -13,16 +14,19 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.get("/list", summary="查看用户列表")
+@router.get("/list", summary="查看用户列表", dependencies=[DependPermisson])
 async def list_user(
     page: int = Query(1, description="页码"),
     page_size: int = Query(10, description="每页数量"),
-    username: str = Query("", description="用户名称，用于搜索"),
+    username: str = Query(None, description="用户名"),
+    is_active: bool = Query(None, description="是否激活"),
     dept_id: int = Query(None, description="部门ID"),
 ):
     q = Q()
     if username:
         q &= Q(username__contains=username)
+    if is_active is not None:
+        q &= Q(is_active=is_active)
     if dept_id is not None:
         q &= Q(dept_id=dept_id)
     total, user_objs = await user_controller.list(page=page, page_size=page_size, search=q)
@@ -55,7 +59,7 @@ async def create_user(
     return Success(msg="Created Successfully")
 
 
-@router.post("/update", summary="更新用户")
+@router.post("/update", summary="更新用户", dependencies=[DependPermisson])
 async def update_user(
     user_in: UserUpdate,
 ):
@@ -64,7 +68,7 @@ async def update_user(
     return Success(msg="Updated Successfully")
 
 
-@router.delete("/delete", summary="删除用户")
+@router.delete("/delete", summary="删除用户", dependencies=[DependPermisson])
 async def delete_user(
     user_id: int = Query(..., description="用户ID"),
 ):
